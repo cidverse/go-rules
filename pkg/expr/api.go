@@ -65,24 +65,29 @@ func EvalBooleanExpression(expression string, context map[string]interface{}) (b
 }
 
 // EvaluateRules will check all rules and returns the count of matching rules
-func EvaluateRules(rules []string, evalContext map[string]interface{}) int {
+func EvaluateRules(rules []string, evalContext map[string]interface{}) (int, error) {
 	result := 0
 
 	for _, rule := range rules {
-		if EvaluateRule(rule, evalContext) {
+		match, err := EvaluateRule(rule, evalContext)
+		if err != nil {
+			return 0, fmt.Errorf("failed to evaluate rule: %w", err)
+		}
+
+		if match {
 			result++
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 // EvaluateRule will evaluate a WorkflowRule and return the result
-func EvaluateRule(rule string, evalContext map[string]interface{}) bool {
+func EvaluateRule(rule string, evalContext map[string]interface{}) (bool, error) {
 	match, err := EvalBooleanExpression(rule, evalContext)
 	if err != nil {
-		return false
+		return false, fmt.Errorf("failed to evaluate rule: %w", err)
 	}
 
-	return match
+	return match, nil
 }
