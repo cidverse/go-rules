@@ -20,8 +20,12 @@ func EvalBooleanExpression(expression string, context map[string]interface{}) (b
 	var exprDecl []*exprpb.Decl
 	for key, value := range context {
 		switch v := value.(type) {
-		case int:
+		case int, int32, int64:
 			exprDecl = append(exprDecl, decls.NewVar(key, decls.Int))
+		case float32, float64:
+			exprDecl = append(exprDecl, decls.NewVar(key, decls.Double))
+		case bool:
+			exprDecl = append(exprDecl, decls.NewVar(key, decls.Bool))
 		case string:
 			exprDecl = append(exprDecl, decls.NewVar(key, decls.String))
 		case []string:
