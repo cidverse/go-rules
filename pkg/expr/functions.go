@@ -17,6 +17,13 @@ var (
 	stringListType      = reflect.TypeOf([]string{})
 	additionalFunctions = []cel.EnvOption{
 		cel.Function(overloads.Contains,
+			cel.Overload("string_contains_string",
+				[]*cel.Type{cel.StringType, cel.StringType},
+				cel.BoolType,
+				cel.BinaryBinding(func(lhs, rhs ref.Val) ref.Val {
+					return types.Bool(strings.Contains(string(lhs.(types.String)), string(rhs.(types.String))))
+				}),
+			),
 			cel.Overload("stringslice_contains_string",
 				[]*cel.Type{cel.ListType(cel.StringType), cel.StringType},
 				cel.BoolType,
